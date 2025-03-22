@@ -47,9 +47,28 @@ const PropertyGrid = () => {
       }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
 
-      
+      if (status === 'error') {
+        return (
+          <div className="bg-red-50 p-4 rounded-md text-red-700 my-4">
+            Error loading properties: {error.message}
+          </div>
+        );
+      }
+
   return (
-    <div>PropertyGrid</div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {data?.pages.map((page, i) =>
+      page.results.map((property: Property) => (
+        <PropertyCard key={`${property.id}-${i}`} property={property} />
+      ))
+    )}
+
+    <div ref={ref} className="col-span-full h-20 flex justify-center items-center">
+      {isFetchingNextPage && (
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
+      )}
+    </div>
+  </div>
   )
 }
 
