@@ -65,7 +65,6 @@ Installing devDependencies:
 
 
 ## Live Link :: https://oneacre-assignment-wufa.vercel.app/
-
 # 🗺️ React + Google Maps Integration Guide
 
 A comprehensive guide to effectively integrating Google Maps in React applications using hooks and best practices.
@@ -73,6 +72,8 @@ A comprehensive guide to effectively integrating Google Maps in React applicatio
 ## 📚 Table of Contents
 
 - [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Installation & Dependencies](#installation--dependencies)
 - [Key Concepts](#key-concepts)
 - [Implementation Guide](#implementation-guide)
 - [Best Practices](#best-practices)
@@ -85,6 +86,48 @@ A comprehensive guide to effectively integrating Google Maps in React applicatio
 ## 🚀 Introduction
 
 This guide covers everything you need to know about properly integrating Google Maps with React applications. We focus on performance optimization, proper state management, and clean implementation patterns.
+
+## 📋 Prerequisites
+
+- Node.js (v18+)
+- npm/yarn/pnpm
+- Basic knowledge of React and Hooks
+- Google Maps API key
+
+## 📦 Installation & Dependencies
+
+Add the following dependencies to your project:
+
+```json
+"dependencies": {
+  "@googlemaps/js-api-loader": "^1.16.8",
+  "@radix-ui/react-slot": "^1.1.2",
+  "@shadcn/ui": "^0.0.4",
+  "@tanstack/react-query": "^5.69.0",
+  "class-variance-authority": "^0.7.1",
+  "clsx": "^2.1.1",
+  "embla-carousel-react": "^8.5.2",
+  "lucide-react": "^0.483.0",
+  "next": "15.2.3",
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0",
+  "react-intersection-observer": "^9.16.0",
+  "tailwind-merge": "^3.0.2"
+}
+```
+
+Install the dependencies:
+
+```bash
+# npm
+npm install
+
+# yarn
+yarn
+
+# pnpm
+pnpm install
+```
 
 ## 🔑 Key Concepts
 
@@ -325,6 +368,26 @@ export function cn(...inputs: ClassValue[]) {
 
 3. **Map Losing State**
    - Check if you're accidentally using useState for references
+
+## 📦 Package Ecosystem
+
+This project leverages the following packages:
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| **@googlemaps/js-api-loader** | ^1.16.8 | Load the Google Maps JavaScript API |
+| **@radix-ui/react-slot** | ^1.1.2 | Primitive component for slot pattern |
+| **@shadcn/ui** | ^0.0.4 | UI component collection |
+| **@tanstack/react-query** | ^5.69.0 | Data fetching and caching |
+| **class-variance-authority** | ^0.7.1 | Create variant components |
+| **clsx** | ^2.1.1 | Construct className strings conditionally |
+| **embla-carousel-react** | ^8.5.2 | Carousel component |
+| **lucide-react** | ^0.483.0 | Icon library |
+| **next** | 15.2.3 | React framework |
+| **react** | ^19.0.0 | UI library |
+| **react-dom** | ^19.0.0 | React DOM bindings |
+| **react-intersection-observer** | ^9.16.0 | Intersection observer hooks |
+| **tailwind-merge** | ^3.0.2 | Merge Tailwind CSS classes |
 
 ## 👥 Contributing
 
