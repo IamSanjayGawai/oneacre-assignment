@@ -1,6 +1,6 @@
 
-import PropertyGrid from './components/PropertyGrid';
-import PropertyMap from './components/PropertyMap';
+import PropertyGrid from '../components/PropertyGrid';
+import PropertyMap from '../components/PropertyMap';
 
 export default function Home() {
   return (

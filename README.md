@@ -234,3 +234,59 @@ Use useRef for storing map-related objects (div, google.maps.Map instance).
 Use useState only for UI state changes (e.g., "Is map loaded?").
 
 Avoid unnecessary re-renders with useRef.
+
+
+
+
+The `cn` function (imported from `../lib/utils`) is used to **conditionally merge and manage class names efficiently**. It likely uses `clsx` or `tailwind-merge` under the hood.  
+
+### **Why is `cn` required?**
+1. **Merging Tailwind Classes Properly**  
+   - Tailwind classes can sometimes conflict (e.g., `bg-red-500` and `bg-blue-500` applied together).
+   - If `cn` is built using `tailwind-merge`, it intelligently removes conflicting classes.
+   
+2. **Handling Conditional Classes**  
+   - If `className` is provided as a prop, `cn` ensures it merges properly without overriding default styles.
+   - Example:
+     ```tsx
+     <Card className="bg-blue-500" />
+     ```
+     This will **merge** `"rounded-lg border bg-card text-card-foreground shadow-sm"` with `"bg-blue-500"`, ensuring `bg-card` is replaced by `bg-blue-500`.
+
+3. **Simplifies Class Composition**  
+   - Instead of manually concatenating classes using template literals like:
+     ```tsx
+     <div className={`rounded-lg border ${className || ""}`} />
+     ```
+     You can simply use:
+     ```tsx
+     <div className={cn("rounded-lg border", className)} />
+     ```
+
+### **How `cn` is usually implemented**
+If `cn` is coming from `../lib/utils`, it’s probably defined like this:
+```tsx
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+This combines:
+- **`clsx`** → For handling conditional class names.
+- **`twMerge`** → To intelligently merge Tailwind CSS classes.
+
+### **Example Usage**
+```tsx
+<Card className="bg-blue-500 text-white" />
+```
+Without `cn`:
+```tsx
+<div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} />
+```
+With `cn`:
+```tsx
+<div className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)} />
+```
+✅ **Ensures Tailwind classes don’t conflict and merge correctly!** 🚀

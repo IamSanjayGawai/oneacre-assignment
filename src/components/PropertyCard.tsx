@@ -2,6 +2,7 @@ import React from 'react'
 import { Property } from '../lib/types';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Card, CardContent, CardFooter } from '../components/ui/card';
 interface PropertyCardProps {
     property: Property | null; // Allow null for loading state
   }
@@ -34,8 +35,9 @@ interface PropertyCardProps {
    return `${state}, ${district}${village ? `, ${village}` : ''}`;
  };
     return (
-    <div>
-        <div className="relative bg-white shadow-md rounded-lg overflow-hidden">
+ 
+        <Card className="overflow-hidden h-full flex flex-col shadow-2xl rounded-2xl border-0">
+        <CardContent className="p-0">
         {propertyImages.map((image: string, index:  null | undefined) => (
             
             <div key={index} className="relative h-48 w-full">
@@ -48,15 +50,17 @@ interface PropertyCardProps {
                   />
                 </div>
                             ))}
-            <div className="p-4">
+
+</CardContent>
+<CardFooter className="flex flex-col items-start p-4 gap-2">
             <h2 className="text-xl font-semibold">   {formatPrice()} • {formatSize()}</h2>
   
             <p className="text-gray-800 font-bold">
             {formatLocation()}
             </p>
-            </div>
-        </div>
-    </div>
+     
+        </CardFooter>
+    </Card>
   )
 }
 

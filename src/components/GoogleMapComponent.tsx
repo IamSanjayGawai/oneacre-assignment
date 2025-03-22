@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react'
 import { MapMarker } from '../lib/types'
-import markerImage from '../../../public/marker.png';
+import markerImage from '../../public/marker.png';
 
 
 interface GoogleMapProps {
