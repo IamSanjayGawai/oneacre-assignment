@@ -1,6 +1,4 @@
 export interface MapMarker {
-    long: number | (() => number);
-    lat: number | (() => number);
     id: string;
     latitude: number;
     longitude: number;
@@ -8,3 +6,4 @@ export interface MapMarker {
     price_per_acre: number;
     total_acres: number;
   }
+  

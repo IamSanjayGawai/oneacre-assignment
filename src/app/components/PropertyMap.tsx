@@ -1,11 +1,10 @@
 'use client'
 
-import React, { use } from 'react'
+
 import {fetchMapMarkers} from '../lib/api'
-import { useEffect } from 'react';
-import GoogleMapComponenet from './GoogleMapComponenet';
+import { useEffect, useState } from 'react';
+import GoogleMapComponent from './GoogleMapComponent';
 import Script from 'next/script';
-import { useState } from 'react';
 import { MapMarker } from '../lib/types';
 
 
@@ -18,14 +17,12 @@ const PropertyMap = ({}) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
- async function fetchMarkers() {
+ async function loadMarkers() {
     setIsLoading(true);
     setError(null);
     try{
        const data = await fetchMapMarkers();  
-       if (data.length === 0) {
-        setError("No markers found");
-       }
+ 
          setMarkers(data);
             setIsLoading(false);  
 
@@ -38,7 +35,7 @@ const PropertyMap = ({}) => {
       }
  }
 
- fetchMarkers();
+ loadMarkers();
     }, []);
 
 
@@ -53,10 +50,13 @@ const PropertyMap = ({}) => {
         />
       )}
 
+    {isLoading && <p>Loading map data...</p>}
+    {error && <p className="text-red-500">{error}</p>}
+
       {!isMapScriptLoaded ? (
         <p>Loading Google Maps...</p>
       ) : (
-        <GoogleMapComponenet markers={markers} />
+        <GoogleMapComponent markers={markers} />
       )}
     </div>
   )
