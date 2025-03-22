@@ -9,7 +9,6 @@ export interface MapMarker {
 
 export interface Property {
   id: string;
-  title?: string;
   land_media: any;
   land_price: number;
   currency_type: string;

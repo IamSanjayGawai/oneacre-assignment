@@ -73,7 +73,7 @@ export default function GoogleMapComponent({ markers }: GoogleMapProps) {
         <button style=" background-color: yellow; color: black; border: none; padding: 10px 10px; text-align: center; text-decoration: none; display: inline-block; font-size: 14px; margin-left: 10px; cursor: pointer;">View Details</button>
           </div>
         `);
-        infoWindow.open(mapInstance?.current!, marker);
+        infoWindow.open(mapInstance.current!, marker);
       });
     });
   }, [markers]); // Runs only once on mount
