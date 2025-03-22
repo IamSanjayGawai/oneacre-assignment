@@ -6,13 +6,14 @@ import { useEffect } from 'react';
 import GoogleMapComponenet from './GoogleMapComponenet';
 import Script from 'next/script';
 import { useState } from 'react';
+import { MapMarker } from '../lib/types';
 
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_MAP_API_KEY;
 
 const PropertyMap = ({}) => {
-    const [isMapLoaded, setIsMapLoaded] = useState(false);
-
+    const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false);
+    const [markers, setMarkers] = useState<MapMarker[]>([]);
     useEffect(() => {
         fetchMapMarkers();
     }, []);
@@ -21,18 +22,18 @@ const PropertyMap = ({}) => {
   return (
     <div className="relative">
       {/* Load Google Maps Script */}
-      {!isMapLoaded && MAP_API_KEY && (
+      {!isMapScriptLoaded && MAP_API_KEY && (
         <Script
           src={`https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEY}&libraries=places`}
-          onLoad={() => setIsMapLoaded(true)}
+          onLoad={() => setIsMapScriptLoaded(true)}
           strategy="lazyOnload"
         />
       )}
 
-      {!isMapLoaded ? (
+      {!isMapScriptLoaded ? (
         <p>Loading Google Maps...</p>
       ) : (
-        <p>Google Maps loaded successfully!</p>
+        <GoogleMapComponenet markers={markers} />
       )}
     </div>
   )

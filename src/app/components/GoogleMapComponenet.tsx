@@ -16,7 +16,9 @@ export default function GoogleMapComponenet({markers}: GoogleMapProps) {
   
   
     return (
-    <div></div>
+    <div>
+Google Map 
+    </div>
   )
 }
 
