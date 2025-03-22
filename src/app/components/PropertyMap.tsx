@@ -1,8 +1,15 @@
-import React from 'react'
+'use client'
+
+import React, { use } from 'react'
+import {fetchMapMarkers} from '../lib/api'
+import { useEffect } from 'react';
 
 const PropertyMap = () => {
+    useEffect(() => {
+        fetchMapMarkers();
+    }, []);
   return (
-    <div>PropertyMap</div>
+    <div></div>
   )
 }
 
