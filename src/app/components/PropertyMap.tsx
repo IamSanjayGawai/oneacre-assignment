@@ -10,7 +10,7 @@ import { MapMarker } from '../lib/types';
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_MAP_API_KEY;
 
-const PropertyMap = ({}) => {
+const PropertyMap = () => {
     const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false);
     const [markers, setMarkers] = useState<MapMarker[]>([]);
     const [error, setError] = useState<string | null>(null);
