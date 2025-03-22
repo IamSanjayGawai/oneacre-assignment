@@ -1,14 +1,18 @@
 export interface MapMarker {
+  longitude: any;
+  latitude: any;
   id: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  long: number;
   property_id: string;
   price_per_acre: number;
   total_acres: number;
+  total_land_size: number;
 }
 
 export interface Property {
   id: string;
+  title?: string;
   land_media: any;
   land_price: number;
   currency_type: string;

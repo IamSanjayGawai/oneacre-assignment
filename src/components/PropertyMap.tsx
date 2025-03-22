@@ -12,20 +12,20 @@ const PropertyMap = () => {
   const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false);
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     async function loadMarkers() {
-      setIsLoading(true);
+
       setError(null);
       try {
         const data = await fetchMapMarkers();
 
         setMarkers(data);
-        setIsLoading(false);
+
       } catch (error) {
         setError("Failed to fetch markers");
-        setIsLoading(false);
+        console.error("Error fetching markers:", error);
       }
     }
 
@@ -43,9 +43,7 @@ const PropertyMap = () => {
         />
       )}
 
-      {isLoading && (
-        <div className="w-full h-[300px] bg-gray-200 animate-pulse rounded-xl" />
-      )}
+
       {error && <p className="text-red-500">{error}</p>}
 
       {!isMapScriptLoaded ? (
