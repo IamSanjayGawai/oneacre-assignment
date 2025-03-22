@@ -1,22 +1,53 @@
 'use client'
 import React from 'react'
 import {fetchProperties} from '../lib/api'
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import PropertyCard from './PropertyCard';
+import { Property } from '../lib/types';
+import { useInView } from 'react-intersection-observer';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
 
 const PropertyGrid = () => {
-    useEffect(() => {
-        async function loadProperties() {
-            try{
-                const data = await fetchProperties();
-                console.log("Property data testing",data);
+    const { ref, inView } = useInView();
+
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status,
+      } = useInfiniteQuery({
+        queryKey: ['properties'],
+        queryFn: ({ pageParam = 1 }) => fetchProperties(pageParam),
+        getNextPageParam: (lastPage) => {
+            console.log("Last Page:", lastPage); // Debugging log
+          
+            // Ensure `next` exists and is a number
+            if (typeof lastPage?.next === "number") {
+              console.log("Next Page Number:", lastPage.next); // Debugging log
+              return lastPage.next;
             }
-            catch(error) {
-                console.error("Failed to fetch properties", error);
-            }
+          
+            console.warn("Invalid next page value:", lastPage.next);
+            return undefined; // Stop pagination if `next` is missing or invalid
+          }
+          ,
+          
+        initialPageParam: 1,
+      });
+
+
+      useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+          console.log("Fetching next page..."); // Debugging log
+          fetchNextPage();
         }
-        loadProperties();
-    }
-    , []);
+      }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+
+      
   return (
     <div>PropertyGrid</div>
   )

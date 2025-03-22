@@ -1,7 +1,6 @@
 import { MapMarker } from "./types";
 
 
-
 export async function fetchMapMarkers(): Promise<MapMarker[]> {
     try {
       const response = await fetch('https://prod-be.1acre.in/lands/landmaps/?seller_id=211');
