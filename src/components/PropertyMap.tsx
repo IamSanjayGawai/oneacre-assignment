@@ -1,43 +1,36 @@
-'use client'
+"use client";
 
-
-import {fetchMapMarkers} from '../lib/api'
-import { useEffect, useState } from 'react';
-import GoogleMapComponent from './GoogleMapComponent';
-import Script from 'next/script';
-import { MapMarker } from '../lib/types';
-
+import { fetchMapMarkers } from "../lib/api";
+import { useEffect, useState } from "react";
+import GoogleMapComponent from "./GoogleMapComponent";
+import Script from "next/script";
+import { MapMarker } from "../lib/types";
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_MAP_API_KEY;
 
 const PropertyMap = () => {
-    const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false);
-    const [markers, setMarkers] = useState<MapMarker[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+  const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false);
+  const [markers, setMarkers] = useState<MapMarker[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
- async function loadMarkers() {
-    setIsLoading(true);
-    setError(null);
-    try{
-       const data = await fetchMapMarkers();  
- 
-         setMarkers(data);
-            setIsLoading(false);  
+  useEffect(() => {
+    async function loadMarkers() {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchMapMarkers();
 
-
-    }
-    catch(error) {
-     setError("Failed to fetch markers");
+        setMarkers(data);
         setIsLoading(false);
-       
+      } catch (error) {
+        setError("Failed to fetch markers");
+        setIsLoading(false);
       }
- }
+    }
 
- loadMarkers();
-    }, []);
-
+    loadMarkers();
+  }, []);
 
   return (
     <div className="relative">
@@ -50,16 +43,16 @@ const PropertyMap = () => {
         />
       )}
 
-    {isLoading && <p>Loading map data...</p>}
-    {error && <p className="text-red-500">{error}</p>}
+      {isLoading && <p>Loading map data...</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
       {!isMapScriptLoaded ? (
-        <p>Loading Google Maps...</p>
+        <div className="w-full h-[300px] bg-gray-200 animate-pulse rounded-xl" />
       ) : (
         <GoogleMapComponent markers={markers} />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PropertyMap
+export default PropertyMap;
