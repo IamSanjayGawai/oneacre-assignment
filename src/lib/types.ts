@@ -30,4 +30,5 @@ export interface Property {
   total_acres: number;
   total_guntas: number;
   slug: string;
+  loading?: boolean;
 }

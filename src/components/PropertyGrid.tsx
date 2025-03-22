@@ -7,6 +7,8 @@ import { Property } from "../lib/types";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
+
+
 const PropertyGrid = () => {
   const { ref, inView } = useInView();
 
@@ -17,27 +19,16 @@ const PropertyGrid = () => {
     hasNextPage,
     isFetchingNextPage,
     status,
+    isLoading, // Add isLoading state
   } = useInfiniteQuery({
     queryKey: ["properties"],
     queryFn: ({ pageParam = 1 }) => fetchProperties(pageParam),
-    getNextPageParam: (lastPage) => {
-      console.log("Last Page:", lastPage); // Debugging log
-
-      // Ensure `next` exists and is a number
-      if (typeof lastPage?.next === "number") {
-        console.log("Next Page Number:", lastPage.next); // Debugging log
-        return lastPage.next;
-      }
-
-      console.warn("Invalid next page value:", lastPage.next);
-      return undefined; // Stop pagination if `next` is missing or invalid
-    },
+    getNextPageParam: (lastPage) => lastPage?.next ?? undefined,
     initialPageParam: 1,
   });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
-      console.log("Fetching next page..."); // Debugging log
       fetchNextPage();
     }
   }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
@@ -52,12 +43,20 @@ const PropertyGrid = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Show skeleton when loading */}
+      {isLoading &&
+        Array.from({ length: 12 }).map((_, i) => (
+          <PropertyCard key={`skeleton-${i}`} property={null} loading={true} />
+        ))}
+
+      {/* Show properties */}
       {data?.pages.map((page, i) =>
         page.results.map((property: Property) => (
-          <PropertyCard key={`${property.id}-${i}`} property={property} />
+          <PropertyCard key={`${property.id}-${i}`} property={property} loading={false} />
         ))
       )}
 
+      {/* Loading Indicator */}
       <div
         ref={ref}
         className="col-span-full h-20 flex justify-center items-center"

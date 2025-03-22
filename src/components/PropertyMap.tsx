@@ -43,7 +43,7 @@ const PropertyMap = () => {
         />
       )}
 
-      {isLoading && <p>Loading map data...</p>}
+
       {error && <p className="text-red-500">{error}</p>}
 
       {!isMapScriptLoaded ? (
