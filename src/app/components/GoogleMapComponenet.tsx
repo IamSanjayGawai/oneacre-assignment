@@ -12,8 +12,7 @@ interface GoogleMapProps {
 
 export default function GoogleMapComponenet({markers}: GoogleMapProps) {
   
-
-  
+console.log("Markers in GoogleMapComponenet: ", markers);
   
     return (
     <div>

@@ -14,8 +14,31 @@ const MAP_API_KEY = process.env.NEXT_PUBLIC_MAP_API_KEY;
 const PropertyMap = ({}) => {
     const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false);
     const [markers, setMarkers] = useState<MapMarker[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
-        fetchMapMarkers();
+ async function fetchMarkers() {
+    setIsLoading(true);
+    setError(null);
+    try{
+       const data = await fetchMapMarkers();  
+       if (data.length === 0) {
+        setError("No markers found");
+       }
+         setMarkers(data);
+            setIsLoading(false);  
+
+
+    }
+    catch(error) {
+     setError("Failed to fetch markers");
+        setIsLoading(false);
+       
+      }
+ }
+
+ fetchMarkers();
     }, []);
 
 
