@@ -25,3 +25,21 @@ export async function fetchMapMarkers(): Promise<MapMarker[]> {
       return [];
     }
   }
+
+
+
+  export async function fetchProperties(page = 1) {
+    try {
+        const response = await fetch(`https://prod-be.1acre.in/lands/?seller=211&page=${page}&page_size=10`);
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        
+        const data = await response.json();
+        console.log("API Response:", data); // Log full response
+
+        return data;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        return { results: [], next: null };
+    }
+}
+
