@@ -1,4 +1,6 @@
 export interface MapMarker {
+    long: number | (() => number);
+    lat: number | (() => number);
     id: string;
     latitude: number;
     longitude: number;

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { MapMarker } from '../lib/types'
 
 
@@ -8,29 +8,25 @@ interface GoogleMapProps {
     markers: MapMarker[]
 }
 
-// If no markers are available, the map defaults to Hyderabad's coordinates.
-
-export default function GoogleMapComponenet({markers}: GoogleMapProps) {
-    const [map, setMap] = React.useState<google.maps.Map | null>(null); //Stores the Google Maps instance.
-    const [mapRef, setMapRef] = useState<HTMLDivElement | null>(null); //Stores a reference to the div where the map will be rendered.
+const DEFAULT_CENTER = { lat: 17.3850, lng: 78.4867 }; // Hyderabad
+export default function GoogleMapComponent() {
+    const mapRef = useRef<HTMLDivElement | null>(null);
+    const mapInstance = useRef<google.maps.Map | null>(null);
   
-console.log("Markers in GoogleMapComponenet: ", markers);
-
-useEffect(() => {
-    if (mapRef && !map) {
-      const initialMap = new google.maps.Map(mapRef, {
-        center: { lat: 17.385044, lng: 78.486671 }, // Default to Hyderabad
-        zoom: 10,
-      });
-      setMap(initialMap);
-    }
-    }, [mapRef, map]);
-
+    useEffect(() => {
+      if (!mapRef.current || !window.google || !window.google.maps) {
+        console.warn("Google Maps API not loaded");
+        return;
+      }
   
-    return (
-    <div>
-<div ref={setMapRef} style={{ width: '100%', height: '300px' }} />;
-    </div>
-  )
-}
-
+      // Initialize the map if it's not already created
+      if (!mapInstance.current) {
+        mapInstance.current = new window.google.maps.Map(mapRef.current, {
+          center: DEFAULT_CENTER, // Hyderabad coordinates
+          zoom: 10,
+        });
+      }
+    }, []); // Runs only once on mount
+  
+    return <div ref={mapRef} style={{ width: '100%', height: '300px' }} />;
+  }
