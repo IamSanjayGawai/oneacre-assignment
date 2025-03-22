@@ -1,9 +1,22 @@
-import React from 'react'
+'use client'
 
-const GoogleMapComponenet = () => {
-  return (
-    <div>GoogleMapComponenet</div>
+import React from 'react'
+import { MapMarker } from '../lib/types'
+
+
+interface GoogleMapProps {
+    markers: MapMarker[]
+}
+
+// If no markers are available, the map defaults to Hyderabad's coordinates.
+
+export default function GoogleMapComponenet({markers}: GoogleMapProps) {
+  
+
+  
+  
+    return (
+    <div></div>
   )
 }
 
-export default GoogleMapComponenet
