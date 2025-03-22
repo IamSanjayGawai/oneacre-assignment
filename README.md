@@ -66,230 +66,270 @@ Installing devDependencies:
 
 ## Live Link :: https://oneacre-assignment-wufa.vercel.app/
 
+# 🗺️ React + Google Maps Integration Guide
 
-Why Use mapRef and setMapRef Instead of map and setMap?
-When working with Google Maps in React, we need to attach the map to a DOM element (a div). The reason we use mapRef and setMapRef instead of map and setMap is because mapRef stores a reference to the actual HTML element where the map will be rendered.
+A comprehensive guide to effectively integrating Google Maps in React applications using hooks and best practices.
 
-1. Understanding mapRef and setMapRef
-tsx
-Copy
-Edit
+## 📚 Table of Contents
+
+- [Introduction](#introduction)
+- [Key Concepts](#key-concepts)
+- [Implementation Guide](#implementation-guide)
+- [Best Practices](#best-practices)
+- [Examples](#examples)
+- [Utility Functions](#utility-functions)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 🚀 Introduction
+
+This guide covers everything you need to know about properly integrating Google Maps with React applications. We focus on performance optimization, proper state management, and clean implementation patterns.
+
+## 🔑 Key Concepts
+
+### Using References for Map Elements
+
+When working with Google Maps in React, it's crucial to understand how references work. There are two primary references to manage:
+
+1. **Map Container Reference** - The HTML element where the map renders
+2. **Map Instance Reference** - The actual Google Maps instance
+
+### Why Use `useRef` Instead of `useState`?
+
+#### The Problem with `useState`
+
+```tsx
+// ❌ Not Recommended
 const [mapRef, setMapRef] = useState<HTMLDivElement | null>(null);
-mapRef: Stores a reference to the div where the Google Map will be rendered.
-
-setMapRef: A function that updates mapRef when React assigns the div to it.
-
-2. Attaching the div Reference
-tsx
-Copy
-Edit
-<div ref={setMapRef} style={{ width: '100%', height: '300px' }} />;
-When this div is rendered, React automatically assigns its reference to mapRef via setMapRef.
-
-This ensures mapRef always holds a valid HTML element.
-
-3. Why Not Use map and setMap Instead?
-If you used:
-
-tsx
-Copy
-Edit
 const [map, setMap] = useState<google.maps.Map | null>(null);
-Problem: map holds the Google Maps instance, not the HTML div. You can't directly attach Google Maps to map—it needs a container (div) first.
+```
 
-The Google Maps API requires a DOM element (document.getElementById('map') equivalent), so mapRef is necessary.
+Using `useState` for these references causes:
+- Unnecessary re-renders when references change
+- Potential map reinitialization issues
+- Performance degradation
 
+#### The Recommended Approach with `useRef`
 
+```tsx
+// ✅ Recommended
+const mapContainerRef = useRef<HTMLDivElement | null>(null);
+const mapInstanceRef = useRef<google.maps.Map | null>(null);
+```
 
-How Does mapRef Have Access to Show the Map?
-Good question! Let's break it down step by step.
+Benefits:
+- No re-renders when updating references
+- Stable references between renders
+- Better performance
+- More idiomatic for DOM references
 
-1. What Is mapRef Actually Holding?
-tsx
-Copy
-Edit
-const [mapRef, setMapRef] = useState<HTMLDivElement | null>(null);
-mapRef stores a reference to a div (HTML element), not the Google Map itself.
+## 💻 Implementation Guide
 
-Initially, mapRef is null because the div hasn't been rendered yet.
+### Basic Setup
 
-Once React renders the div, React automatically calls setMapRef(divElement), and mapRef now holds that div reference.
+```tsx
+import { useRef, useEffect } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
 
-2. How Does Google Maps Attach to mapRef?
-tsx
-Copy
-Edit
-useEffect(() => {
-    if (mapRef && !map) {
-      const initialMap = new google.maps.Map(mapRef, {
-        center: { lat: 17.385044, lng: 78.486671 }, // Hyderabad
-        zoom: 10,
-      });
-      setMap(initialMap);
-    }
-}, [mapRef, map]);
-This useEffect runs whenever mapRef changes.
+const MapComponent = () => {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
 
-If mapRef is not null, it means the div is now available.
+  useEffect(() => {
+    // Avoid re-initialization
+    if (!mapContainerRef.current || mapInstanceRef.current) return;
+    
+    const loader = new Loader({
+      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+      version: 'weekly',
+    });
 
-We then create a new Google Maps instance and attach it to mapRef:
-
-tsx
-Copy
-Edit
-new google.maps.Map(mapRef, { ... });
-This tells Google Maps:
-"Hey, use this div (mapRef) to render the map!"
-
-3. How Does the Map Appear?
-🔹 When the component renders:
-
-React creates a <div> element.
-
-The div reference is stored in mapRef.
-
-useEffect initializes Google Maps inside this div.
-
-🔹 Once new google.maps.Map(mapRef, { ... }) runs:
-
-Google Maps modifies the div directly.
-
-It injects the map's UI inside that div.
-
-Since mapRef points to the div, the map appears on the screen.
-
-
-
-
-
-
-
-
-
-
-When to Use useRef vs. useState in Google Maps?
-In your case, both useRef and useState can store the map reference (mapRef). However, useRef is the better choice for storing the map's container (div) and even the map instance itself.
-
-📌 Comparing useRef and useState
-Hook	When to Use?	Why?
-useRef	When storing mutable, non-re-rendering values like DOM elements or external objects.	Does not trigger re-renders when updated. Best for storing DOM references (div for Google Maps).
-useState	When storing reactive state that should cause re-renders when changed.	Triggers re-renders when updated, which is unnecessary for Google Maps.
-🛑 Why useState Is Not Ideal for mapRef
-If you use useState for mapRef like this:
-
-tsx
-Copy
-Edit
-const [mapRef, setMapRef] = useState<HTMLDivElement | null>(null);
-Every time setMapRef is called, React re-renders the component.
-
-The map might reinitialize or lose its state.
-
-However, Google Maps does not need re-renders to work. It just needs to be initialized once inside a div.
-
-✅ Best Approach: Use useRef
-tsx
-Copy
-Edit
-const mapRef = useRef<HTMLDivElement | null>(null);
-const mapInstance = useRef<google.maps.Map | null>(null);
-
-useEffect(() => {
-    if (!mapRef.current || mapInstance.current) return; // Avoid re-initialization
-
-    mapInstance.current = new google.maps.Map(mapRef.current, {
+    loader.load().then(() => {
+      mapInstanceRef.current = new google.maps.Map(mapContainerRef.current!, {
         center: { lat: 17.385044, lng: 78.486671 },
         zoom: 10,
+        mapTypeControl: false,
+      });
     });
-}, []);
-Why useRef Is Better?
-✅ No Unnecessary Re-renders – Unlike useState, useRef updates without triggering a component re-render.
+  }, []);
 
-✅ Persists Between Renders – The map instance and div reference remain stable.
+  return (
+    <div 
+      ref={mapContainerRef} 
+      className="w-full h-[500px] rounded-lg"
+    />
+  );
+};
 
-✅ More Performant – Prevents multiple re-initializations of Google Maps.
+export default MapComponent;
+```
 
-💡 When Should You Use useState?
-If you need reactive state updates, like:
+### When to Use `useState` with Maps
 
-Tracking user interactions (e.g., clicked marker)
+Use `useState` only for reactive UI states:
 
-Changing the center dynamically
-
-Storing UI-related states (e.g., "Is map loaded?")
-
-Example:
-
-tsx
-Copy
-Edit
+```tsx
 const [isMapLoaded, setIsMapLoaded] = useState(false);
+const [selectedLocation, setSelectedLocation] = useState<LatLng | null>(null);
 
 useEffect(() => {
-  if (mapRef.current && !mapInstance.current) {
-    mapInstance.current = new google.maps.Map(mapRef.current, { ... });
-    setIsMapLoaded(true);
-  }
+  if (!mapContainerRef.current || mapInstanceRef.current) return;
+  
+  loader.load().then(() => {
+    mapInstanceRef.current = new google.maps.Map(mapContainerRef.current!, {
+      center: { lat: 17.385044, lng: 78.486671 },
+      zoom: 10,
+    });
+    setIsMapLoaded(true); // UI state change
+  });
 }, []);
-🔥 Conclusion: Use useRef for Google Maps
-Use useRef for storing map-related objects (div, google.maps.Map instance).
+```
 
-Use useState only for UI state changes (e.g., "Is map loaded?").
+## 🛠️ Best Practices
 
-Avoid unnecessary re-renders with useRef.
+### 1. Proper Class Handling with Utility Functions
 
+Use utility functions like `cn` to manage classes effectively:
 
-
-
-The `cn` function (imported from `../lib/utils`) is used to **conditionally merge and manage class names efficiently**. It likely uses `clsx` or `tailwind-merge` under the hood.  
-
-### **Why is `cn` required?**
-1. **Merging Tailwind Classes Properly**  
-   - Tailwind classes can sometimes conflict (e.g., `bg-red-500` and `bg-blue-500` applied together).
-   - If `cn` is built using `tailwind-merge`, it intelligently removes conflicting classes.
-   
-2. **Handling Conditional Classes**  
-   - If `className` is provided as a prop, `cn` ensures it merges properly without overriding default styles.
-   - Example:
-     ```tsx
-     <Card className="bg-blue-500" />
-     ```
-     This will **merge** `"rounded-lg border bg-card text-card-foreground shadow-sm"` with `"bg-blue-500"`, ensuring `bg-card` is replaced by `bg-blue-500`.
-
-3. **Simplifies Class Composition**  
-   - Instead of manually concatenating classes using template literals like:
-     ```tsx
-     <div className={`rounded-lg border ${className || ""}`} />
-     ```
-     You can simply use:
-     ```tsx
-     <div className={cn("rounded-lg border", className)} />
-     ```
-
-### **How `cn` is usually implemented**
-If `cn` is coming from `../lib/utils`, it’s probably defined like this:
 ```tsx
-import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { cn } from '../lib/utils';
+
+const MapContainer = ({ className, ...props }) => (
+  <div 
+    ref={mapContainerRef}
+    className={cn("w-full h-[400px] rounded-lg border", className)}
+    {...props}
+  />
+);
+```
+
+### 2. Loading State Management
+
+```tsx
+const MapComponent = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Map initialization code...
+  
+  return (
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+          <Spinner />
+        </div>
+      )}
+      <div ref={mapContainerRef} className="w-full h-[400px]" />
+    </div>
+  );
+};
+```
+
+### 3. Event Handling
+
+```tsx
+useEffect(() => {
+  if (!mapInstanceRef.current) return;
+  
+  const listener = mapInstanceRef.current.addListener('click', (e) => {
+    setSelectedLocation({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng()
+    });
+  });
+  
+  // Clean up listener on unmount
+  return () => {
+    google.maps.event.removeListener(listener);
+  };
+}, [mapInstanceRef.current]);
+```
+
+## 📋 Examples
+
+### Adding Markers
+
+```tsx
+const addMarker = (position) => {
+  if (!mapInstanceRef.current) return;
+  
+  const marker = new google.maps.Marker({
+    position,
+    map: mapInstanceRef.current,
+    animation: google.maps.Animation.DROP,
+  });
+  
+  markersRef.current.push(marker);
+  
+  return marker;
+};
+```
+
+### Custom Controls
+
+```tsx
+const addCustomControl = () => {
+  if (!mapInstanceRef.current) return;
+  
+  const controlDiv = document.createElement('div');
+  controlDiv.className = 'custom-control';
+  
+  // Build your custom control UI
+  controlDiv.innerHTML = `
+    <button class="bg-white p-2 rounded-full shadow-md">
+      <svg width="24" height="24" viewBox="0 0 24 24">
+        <!-- SVG content here -->
+      </svg>
+    </button>
+  `;
+  
+  controlDiv.addEventListener('click', handleControlClick);
+  
+  mapInstanceRef.current.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+};
+```
+
+## 🧰 Utility Functions
+
+### The `cn` Function Explained
+
+The `cn` function combines `clsx` and `tailwind-merge` to efficiently handle class names:
+
+```tsx
+// lib/utils.ts
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 ```
-This combines:
-- **`clsx`** → For handling conditional class names.
-- **`twMerge`** → To intelligently merge Tailwind CSS classes.
 
-### **Example Usage**
-```tsx
-<Card className="bg-blue-500 text-white" />
-```
-Without `cn`:
-```tsx
-<div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} />
-```
-With `cn`:
-```tsx
-<div className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)} />
-```
-✅ **Ensures Tailwind classes don’t conflict and merge correctly!** 🚀
+**Why it's important:**
+- Properly merges Tailwind classes
+- Resolves conflicts (e.g., `bg-red-500` and `bg-blue-500`)
+- Handles conditional classes elegantly
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Map Not Displaying**
+   - Check if container has explicit height
+   - Verify API key is valid
+   - Check browser console for errors
+
+2. **Multiple Map Initializations**
+   - Ensure proper dependency array in useEffect
+   - Verify condition: `if (!mapContainerRef.current || mapInstanceRef.current) return;`
+
+3. **Map Losing State**
+   - Check if you're accidentally using useState for references
+
+## 👥 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
