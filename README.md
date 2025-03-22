@@ -64,6 +64,9 @@ Installing devDependencies:
 
 
 
+https://oneacre-assignment-wufa.vercel.app/
+
+
 Why Use mapRef and setMapRef Instead of map and setMap?
 When working with Google Maps in React, we need to attach the map to a DOM element (a div). The reason we use mapRef and setMapRef instead of map and setMap is because mapRef stores a reference to the actual HTML element where the map will be rendered.
 
