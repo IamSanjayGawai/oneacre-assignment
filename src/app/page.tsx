@@ -2,6 +2,7 @@
 import Navbar from '@/components/Navbar';
 import PropertyGrid from '../components/PropertyGrid';
 import PropertyMap from '../components/PropertyMap';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
           <PropertyGrid />
         </section>
       </div>
+<Footer />      
     </div>
     </>
   );
